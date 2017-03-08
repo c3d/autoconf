@@ -821,8 +821,6 @@ EOF
   my $traces = new Autom4te::XFile ($tcache . $req->id, "<");
   while ($_ = $traces->getline)
     {
-      # Traces without file/line
-      next if (m{^m4trace: -(\d+)- ([^(]+)\((.*)$});
       # Trace with arguments, as the example above.  We don't try
       # to match the trailing parenthesis as it might be on a
       # separate line.
@@ -831,6 +829,8 @@ EOF
       # Traces without arguments, always on a single line.
       s{^m4trace:(.+):(\d+): -(\d+)- ([^)]*)\n$}
        {AT_$4([$1], [$2], [$3], [$4])\n};
+      s{^m4trace: -(\d+)- ([^(]+)\((.*)$}
+       {AT_$2([nowhere], [0], [$1], [$2], $3};
       print $trace_m4 "$_";
     }
   $trace_m4->close;
